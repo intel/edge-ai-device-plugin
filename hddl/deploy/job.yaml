@@ -1,0 +1,21 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: fullpipe
+  labels:
+    jobgroup: fullpipe
+spec:
+  template:
+    metadata:
+      labels:
+        jobgroup: fullpipe
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: fullpipe
+        image: gar-registry.caas.intel.com/virtiot/hddl:1.0
+        command: [ "/run_test.sh"]
+        resources:
+          limits:
+            kmb.intel.com/device: 1
+

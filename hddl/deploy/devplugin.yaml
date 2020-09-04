@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: devplugin
+  labels:
+    app: devplugin
+spec:
+  selector:
+    matchLabels:
+      name: devplugin
+  template:
+    metadata:
+      labels:
+        name: devplugin
+    spec:
+      containers:
+      - name: devplugin
+        image: gar-registry.caas.intel.com/virtiot/hddl_dev_plugin
+        securityContext:
+          privileged: true
+        command: [ "/hddl_plugin"]
+        volumeMounts:
+        - mountPath: /dev/xlnk
+          name: xlnk
+        - mountPath: /dev/dri/card0
+          name: dri
+        - mountPath: /tmp
+          name: socket
+        - mountPath: /var/lib/kubelet/device-plugins
+          name: kubelet
+      volumes:
+      - name: socket
+        hostPath:
+          path: /tmp
+      - name: xlnk
+        hostPath:
+          path: /dev/xlnk
+      - name: dri
+        hostPath:
+          path: /dev/dri/card0
+      - name: kubelet
+        hostPath:
+          path: /var/lib/kubelet/device-plugins
+          type: Directory
