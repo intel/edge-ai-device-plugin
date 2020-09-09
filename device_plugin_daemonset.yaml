@@ -21,19 +21,17 @@ spec:
         operator: Exists
       containers:
       - name: kmb-plugin
-        image: ubuntu
+        securityContext:
+          readOnlyRootFilesystem: true
+        image: ubuntu:20.04
         command: [ "/usr/bin/kmb_plugin"]
         volumeMounts:
         - mountPath: /dev/xlnk
           name: kmb-xlnk
-        - mountPath: /dev/mem
-          name: kmb-mem
         - mountPath: /dev/vpusmm0
           name: kmb-vpusmm
         - mountPath: /dev/dri/renderD129
           name: kmb-vaapi
-        - mountPath: /data/kmb
-          name: kmb-vol
         - mountPath: /var/lib/kubelet/device-plugins
           name: kmb-socket
         - mountPath: /usr/bin/kmb_plugin
@@ -45,19 +43,12 @@ spec:
       - name: kmb-xlnk
         hostPath:
           path: /dev/xlnk
-      - name: kmb-mem
-        hostPath:
-          path: /dev/mem
       - name: kmb-vpusmm
         hostPath:
           path: /dev/vpusmm0
       - name: kmb-vaapi
         hostPath:
           path: /dev/dri/renderD129
-      - name: kmb-vol
-        hostPath:
-          path: /data/kmb
-          type: Directory
       - name: kmb-socket
         hostPath:
           path: /var/lib/kubelet/device-plugins

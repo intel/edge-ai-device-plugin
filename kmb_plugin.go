@@ -30,12 +30,8 @@ const (
 	namespace  = "kmb.intel.com"
 
 	xlinkDevNode  = "/dev/xlnk"
-	memDevNode    = "/dev/mem"
 	vpusmmDevNode = "/dev/vpusmm0"
 	driDevNode    = "/dev/dri/renderD129"
-	driDevNode2   = "/dev/dri/renderD128"
-
-	dataPath     = "/data"
 )
 
 var (
@@ -79,22 +75,22 @@ func (dp *devicePlugin) scan() (dpapi.DeviceTree, error) {
 
 	devTree := dpapi.NewDeviceTree()
 
-	// check if xlink dev node is present
 	if !fileExists(dp.xlinkDev) {
 		return devTree, nil
 	}
 
-	debug.Printf("xlink device node is present")
+	if !fileExists(vpusmmDevNode) {
+		return devTree, nil
+	}
+
+	if !fileExists(driDevNode) {
+		return devTree, nil
+	}
 
 	nodes := []pluginapi.DeviceSpec{
 		{
 			HostPath:      dp.xlinkDev,
 			ContainerPath: dp.xlinkDev,
-			Permissions:   "rw",
-		},
-		{
-			HostPath:      memDevNode,
-			ContainerPath: memDevNode,
 			Permissions:   "rw",
 		},
 		{
@@ -107,19 +103,9 @@ func (dp *devicePlugin) scan() (dpapi.DeviceTree, error) {
 			ContainerPath: driDevNode,
 			Permissions:   "rw",
 		},
-		{
-			HostPath:      driDevNode2,
-			ContainerPath: driDevNode2,
-			Permissions:   "rw",
-		},
 	}
 
-	mounts := []pluginapi.Mount{
-		{
-			HostPath:      dataPath,
-			ContainerPath: dataPath,
-		},
-	}
+	mounts := []pluginapi.Mount { }
 
 	devTree.AddDevice("vpu",   "kmb-vpu-0",   dpapi.NewDeviceInfo(pluginapi.Healthy, nodes, mounts, nil))
 	devTree.AddDevice("codec", "kmb-codec-0", dpapi.NewDeviceInfo(pluginapi.Healthy, nodes, mounts, nil))

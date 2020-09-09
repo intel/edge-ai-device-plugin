@@ -32,7 +32,6 @@ const (
 	namespace  = "kmb.intel.com"
 
 	xlinkDevNode  = "/dev/xlnk"
-	driNode = "/dev/dri/card0"
 
 	hddlAlive     = "hddlunite_service_alive.mutex"
 	hddlReady     = "hddlunite_service_ready.mutex"
@@ -93,11 +92,6 @@ func (dp *devicePlugin) scan() (dpapi.DeviceTree, error) {
 		{
 			HostPath:      xlinkDevNode,
 			ContainerPath: xlinkDevNode,
-			Permissions:   "rw",
-		},
-		{
-			HostPath:      driNode,
-			ContainerPath: driNode,
 			Permissions:   "rw",
 		},
 	}
