@@ -30,7 +30,7 @@ const (
 	namespace  = "kmb.intel.com"
 
 	xlinkDevNode  = "/dev/xlnk"
-	vpusmmDevNode = "/dev/vpusmm0"
+	vpumgrDevNode = "/dev/vpumgr0"
 	driDevNode    = "/dev/dri/renderD129"
 )
 
@@ -79,7 +79,7 @@ func (dp *devicePlugin) scan() (dpapi.DeviceTree, error) {
 		return devTree, nil
 	}
 
-	if !fileExists(vpusmmDevNode) {
+	if !fileExists(vpumgrDevNode) {
 		return devTree, nil
 	}
 
@@ -94,8 +94,8 @@ func (dp *devicePlugin) scan() (dpapi.DeviceTree, error) {
 			Permissions:   "rw",
 		},
 		{
-			HostPath:      vpusmmDevNode,
-			ContainerPath: vpusmmDevNode,
+			HostPath:      vpumgrDevNode,
+			ContainerPath: vpumgrDevNode,
 			Permissions:   "rw",
 		},
 		{
