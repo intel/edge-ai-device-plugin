@@ -29,7 +29,7 @@ import (
 
 const (
 	// Device plugin settings.
-	namespace  = "kmb.intel.com"
+	namespace  = "edgeai.intel.com"
 
 	xlinkDevNode  = "/dev/xlnk"
 
@@ -121,7 +121,16 @@ func (dp *devicePlugin) scan() (dpapi.DeviceTree, error) {
 
 	for i := 0; i < len(ss) - 1; i++ {
 	        s := fmt.Sprintf("kmb-device-%d", i)
-		devTree.AddDevice("device", s, dpapi.NewDeviceInfo(pluginapi.Healthy, nodes, mounts, nil))
+		devTree.AddDevice("kmb", s, dpapi.NewDeviceInfo(pluginapi.Healthy, nodes, mounts, nil))
+	}
+
+	cmdout, _ = exec.Command("lspci", "-d", "8086:4fc0").Output()
+	ss = strings.Split(string(cmdout), "4fc0")
+	debug.Printf("detect %d thb devices", len(ss)/2)
+
+	for i := 0; i < len(ss)/2; i++ {
+	        s := fmt.Sprintf("thb-device-%d", i)
+	        devTree.AddDevice("thb", s, dpapi.NewDeviceInfo(pluginapi.Healthy, nodes, mounts, nil))
 	}
 
 
