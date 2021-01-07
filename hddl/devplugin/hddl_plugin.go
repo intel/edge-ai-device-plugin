@@ -126,9 +126,11 @@ func (dp *devicePlugin) scan() (dpapi.DeviceTree, error) {
 
 	cmdout, _ = exec.Command("lspci", "-d", "8086:4fc0").Output()
 	ss = strings.Split(string(cmdout), "4fc0")
-	debug.Printf("detect %d thb devices", len(ss)/2)
+	cmdout, _ = exec.Command("lspci", "-d", "8086:4fc1").Output()
+	ss2 := strings.Split(string(cmdout), "4fc1")
+	debug.Printf("detect %d thb devices", len(ss)/2 + len(ss2)/2)
 
-	for i := 0; i < len(ss)/2; i++ {
+	for i := 0; i < len(ss)/2 + len(ss2)/2; i++ {
 	        s := fmt.Sprintf("thb-device-%d", i)
 	        devTree.AddDevice("thb", s, dpapi.NewDeviceInfo(pluginapi.Healthy, nodes, mounts, nil))
 	}
