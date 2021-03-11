@@ -17,10 +17,11 @@ package main
 import (
 	"flag"
 	"fmt"
-	"time"
+	"log"
 	"os"
 	"os/exec"
 	"strings"
+	"time"
 
 	"github.com/intel/intel-device-plugins-for-kubernetes/pkg/debug"
 	dpapi "github.com/intel/intel-device-plugins-for-kubernetes/pkg/deviceplugin"
@@ -29,9 +30,9 @@ import (
 
 const (
 	// Device plugin settings.
-	namespace  = "edgeai.intel.com"
+	namespace = "edgeai.intel.com"
 
-	xlinkDevNode  = "/dev/xlnk"
+	xlinkDevNode = "/dev/xlnk"
 
 	hddlAlive     = "hddlunite_service_alive.mutex"
 	hddlReady     = "hddlunite_service_ready.mutex"
@@ -40,7 +41,8 @@ const (
 )
 
 var (
-	isdebug = flag.Int("debug", 1, "debug level (0..1)")
+	isdebug    = flag.Int("debug", 1, "debug level (0..1)")
+	scalingtbh = flag.Int("scale", 1, "tbh device scaling")
 )
 
 type devicePlugin struct {
@@ -49,7 +51,7 @@ type devicePlugin struct {
 
 func newDevicePlugin(xlinkDev string) *devicePlugin {
 	return &devicePlugin{
-		xlinkDev:   xlinkDev,
+		xlinkDev: xlinkDev,
 	}
 }
 
@@ -77,7 +79,6 @@ func fileExists(filename string) bool {
 
 func (dp *devicePlugin) scan() (dpapi.DeviceTree, error) {
 	fmt.Println("KMB device scanning started")
-
 
 	devTree := dpapi.NewDeviceTree()
 
@@ -117,10 +118,10 @@ func (dp *devicePlugin) scan() (dpapi.DeviceTree, error) {
 
 	cmdout, _ := exec.Command("lspci", "-d", "8086:6240").Output()
 	ss := strings.Split(string(cmdout), "6240")
-	debug.Printf("detect %d kmb devices", len(ss) - 1)
+	debug.Printf("detect %d kmb devices", len(ss)-1)
 
-	for i := 0; i < len(ss) - 1; i++ {
-	        s := fmt.Sprintf("kmb-device-%d", i)
+	for i := 0; i < len(ss)-1; i++ {
+		s := fmt.Sprintf("kmb-device-%d", i)
 		devTree.AddDevice("kmb", s, dpapi.NewDeviceInfo(pluginapi.Healthy, nodes, mounts, nil))
 	}
 
@@ -128,23 +129,27 @@ func (dp *devicePlugin) scan() (dpapi.DeviceTree, error) {
 	ss = strings.Split(string(cmdout), "4fc0")
 	cmdout, _ = exec.Command("lspci", "-d", "8086:4fc1").Output()
 	ss2 := strings.Split(string(cmdout), "4fc1")
-	debug.Printf("detect %d thb devices", len(ss)/2 + len(ss2)/2)
+	debug.Printf("detect %d thb devices", len(ss)/2+len(ss2)/2)
 
-	for i := 0; i < len(ss)/2 + len(ss2)/2; i++ {
-	        s := fmt.Sprintf("thb-device-%d", i)
-	        devTree.AddDevice("thb", s, dpapi.NewDeviceInfo(pluginapi.Healthy, nodes, mounts, nil))
+	for i := 0; i < (len(ss)/2+len(ss2)/2)*(*scalingtbh); i++ {
+		s := fmt.Sprintf("thb-device-%d", i)
+		fmt.Println(s)
+		devTree.AddDevice("thb", s, dpapi.NewDeviceInfo(pluginapi.Healthy, nodes, mounts, nil))
 	}
-
 
 	return devTree, nil
 }
 
 func main() {
+	flag.Parse()
 	if *isdebug > 0 {
 		debug.Activate()
 		debug.Printf("isdebug is on")
 	}
-
+	fmt.Printf("tbh scaling: %d\n", *scalingtbh)
+	if *scalingtbh < 1 {
+		log.Fatal("Scale number cannot less than 1.")
+	}
 	fmt.Println("KMB device plugin started")
 
 	plugin := newDevicePlugin(xlinkDevNode)
