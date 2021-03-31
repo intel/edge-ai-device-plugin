@@ -98,19 +98,19 @@ func (dp *devicePlugin) scan() (dpapi.DeviceTree, error) {
 
 	mounts := []pluginapi.Mount{
 		{
-			HostPath:      "/tmp/" + hddlAlive,
+			HostPath:      "/var/tmp/" + hddlAlive,
 			ContainerPath: "/var/tmp/" + hddlAlive,
 		},
 		{
-			HostPath:      "/tmp/" + hddlReady,
+			HostPath:      "/var/tmp/" + hddlReady,
 			ContainerPath: "/var/tmp/" + hddlReady,
 		},
 		{
-			HostPath:      "/tmp/" + hddlStartExit,
+			HostPath:      "/var/tmp/" + hddlStartExit,
 			ContainerPath: "/var/tmp/" + hddlStartExit,
 		},
 		{
-			HostPath:      "/tmp/" + hddlSocket,
+			HostPath:      "/var/tmp/" + hddlSocket,
 			ContainerPath: "/var/tmp/" + hddlSocket,
 		},
 	}
