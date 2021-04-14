@@ -1,12 +1,10 @@
-FROM ubuntu:20.04
-
-RUN \
-  apt-get update && \
-    DEBIAN_FRONTEND=noninteractive apt-get -y install pciutils \
-      && apt-get clean && \
-        rm -rf /var/lib/apt/lists/*
+FROM alpine:latest
 
 COPY hddl_plugin /hddl_plugin
 
-RUN useradd -d /home/user -m -s /bin/bash user
+RUN apk add pciutils
+RUN addgroup -g 1000 appgroup
+
+# -D permits to create an user without password
+RUN adduser -u 1000 -G appgroup -h /home/user -D user
 USER user
