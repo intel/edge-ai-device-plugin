@@ -2,7 +2,7 @@ FROM alpine:latest
 
 COPY hddl_plugin /hddl_plugin
 RUN apk update
-RUN apk add --upgrade apk-tools-static
+RUN apk add --upgrade apk-tools-static && apk add --upgrade apk-tools
 RUN apk add --upgrade openssl-dev
 RUN apk add pciutils
 RUN addgroup -g 1000 appgroup
