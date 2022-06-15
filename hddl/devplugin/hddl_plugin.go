@@ -150,6 +150,11 @@ func main() {
 	if *scalingtbh < 1 {
 		log.Fatal("Scale number cannot less than 1.")
 	}
+
+	if *scalingtbh > 40 {
+		log.Fatal("Scale number cannot more than 40.")
+	}
+
 	fmt.Println("KMB device plugin started")
 
 	plugin := newDevicePlugin(xlinkDevNode)
